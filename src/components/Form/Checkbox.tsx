@@ -1,11 +1,11 @@
-import SvgCheckbox from "@/components/SvgCheckbox"
+import { check } from "../Icons"
 
-interface AuthCheckoboxProps{
+interface CheckoboxProps{
     label: string
     className?: any
 }
 
-export default function AuthCheckbox(props: AuthCheckoboxProps){
+export function Checkbox(props: CheckoboxProps){
     return (
         <div className={`flex items-center`}>
             <input 
@@ -16,12 +16,14 @@ export default function AuthCheckbox(props: AuthCheckoboxProps){
                     ${props.className}
                 `}
                 type="checkbox"
+                name="rememberme"
             />
-            <SvgCheckbox></SvgCheckbox>
+            {check}
             <label className={
                 `ml-3 mt-1 font-medium 
                 text-[#D1D5DB] text-opacity-90
-            `}>
+            `}
+            >
                 {props.label}
             </label>
 
