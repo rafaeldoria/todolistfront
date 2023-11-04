@@ -1,12 +1,21 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import { useAuth } from '@/data/contexts/AuthProvider/useAuth'
+import { ProtectedLayout } from './ProtectedLayout.tsx/ProtectedLayout'
+ 
+export default function Page() {
+  const { user, logout } = useAuth()
 
-const inter = Inter({ subsets: ['latin'] })
-
-export default function Home() {
   return (
-    <div>
-      <p>LOGIN</p>
-    </div>
+    <ProtectedLayout>
+      <div>
+        HOME
+        <br />
+          Welcome {user?.name} - {user?.email}
+          <br />
+          Cookie {user?.token}
+          <div>
+            <button onClick={logout}>LOGOUT</button>
+          </div>
+      </div>
+    </ProtectedLayout>
   )
 }

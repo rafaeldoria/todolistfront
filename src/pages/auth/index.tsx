@@ -1,36 +1,37 @@
-import { Form } from "@/components/Form";
-import { google } from "@/components/Icons/index"
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Danger } from "@/components/Alerts/Danger";
+import { Form } from "@/components/Form"
+import { alert, google } from "@/components/Icons/index"
+import { useAuth } from "@/data/contexts/AuthProvider/useAuth";
+import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link";
-import { FormProvider, useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form"
 import z from "zod";
 
 const userSchema = z
     .object({
-        name: z.string().min(5, {message: 'Name is required'})
-            .transform(name => {
-                return name
-                    .trim()
-                    .split(' ')
-                    .map(word => word[0].toLocaleUpperCase().concat(word.substring(1)))
-                    .join(' ')
-            }),
         email: z.string().min(5, {message: 'Email is required'})
             .email('Invalid email format'),
         password: z.string().min(6, {message: 'Min 6 character for password'}),
-        confirmPassword: z.string(),
-    })
-    .refine(data => data.password === data.confirmPassword, {
-        message: "Passwords don`'`t match",
-        path: ['confirmPassword']
     })
 
 type userData = z.infer<typeof userSchema>
 
-export default function Register(){
+export default function Index(){
+    // const { token, login, register } = useAuthData()
+    const { authenticate } = useAuth()
+    const router = useRouter()
+    const [error, setError] = useState<string>('')
 
-    function handleSubmitForm(data: any){
-        console.log(data)
+    async function handleSubmitForm(data: any){
+        try {
+            await authenticate(data.email, data.password)
+            router.push('/')
+        } catch (e: any) {
+            setError(e.message)
+            setTimeout(() => setError(''), 6 * 1000)
+        }
     }
 
     const userForm = useForm<userData>({
@@ -52,16 +53,18 @@ export default function Register(){
                     
                     <div className="flex flex-col items-center justify-center">
                         <p className="text-white text-2xl font-bold">
-                            Create your account
+                            Sign in to your account
                         </p>
                     </div>
 
+                    {error ? (
+                        <Danger 
+                            icon={alert}
+                            msg={error}
+                        ></Danger>
+                    ) : false}
+
                     <div className="flex flex-col my-4">
-                        <Form.Field>
-                            <Form.Label htmlFor="name">Name</Form.Label>
-                            <Form.Input type="text" name="name" placeholder="Yusuke Urameshi" autoComplete="off"/>
-                            <Form.ErrorMessage field="name"></Form.ErrorMessage>
-                        </Form.Field>
                         <Form.Field>
                             <Form.Label htmlFor="email">Email</Form.Label>
                             <Form.Input type="email" name="email" placeholder="name@company.com" autoComplete="off"/>
@@ -72,11 +75,17 @@ export default function Register(){
                             <Form.Input type="password" name="password" placeholder="*********" autoComplete="off"/>
                             <Form.ErrorMessage field="password"></Form.ErrorMessage>
                         </Form.Field>
-                        <Form.Field>
-                            <Form.Label htmlFor="confirmPassword">Confirm Password</Form.Label>
-                            <Form.Input type="password" name="confirmPassword" placeholder="*********" autoComplete="off"/>
-                            <Form.ErrorMessage field="confirmPassword"></Form.ErrorMessage>
-                        </Form.Field>
+                    </div>
+
+                    <div className="flex my-3 md:flex-row md:items-center justify-between">
+                        <Form.Checkbox 
+                            label="Remember me"
+                            className="border-1 border-[#707c91] rounded-md mt-1 bg-[#374151]
+                            checked:bg-blue-500 checked:border-1"
+                        />
+                        <div className="flex items-center">
+                            <button className="text-blue-500">Forgot password?</button>  
+                        </div>
                     </div>
                     
                     <div className="flex flex-col items-center justify-center my-3">
@@ -86,7 +95,7 @@ export default function Register(){
                             className="my-3 py-3 w-full rounded-lg
                                 bg-blue-500 text-blue-200"
                         >
-                            Create an account
+                            Login
                         </button>
 
                         <hr className="my-1 border-gray-600 w-full"/>
@@ -106,7 +115,7 @@ export default function Register(){
                     </div>
 
                     <div className="flex flex-col items-center justify-center my-3">
-                        <Link className="text-blue-500" href="/authentication">Already have an account?</Link>
+                        <Link className="text-blue-500" href="/auth/register">Dont have an account?</Link>
                     </div>
                 </form>
             </FormProvider>
