@@ -1,6 +1,7 @@
 import { Danger } from "@/components/Alerts/Danger";
 import { Form } from "@/components/Form"
 import { alert, google } from "@/components/Icons/index"
+import { Loading } from "@/components/Loading";
 import { useAuth } from "@/data/contexts/AuthProvider/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link";
@@ -19,8 +20,7 @@ const userSchema = z
 type userData = z.infer<typeof userSchema>
 
 export default function Index(){
-    // const { token, login, register } = useAuthData()
-    const { authenticate } = useAuth()
+    const { authenticate, loading } = useAuth()
     const router = useRouter()
     const [error, setError] = useState<string>('')
 
@@ -89,15 +89,17 @@ export default function Index(){
                     </div>
                     
                     <div className="flex flex-col items-center justify-center my-3">
-                        <button 
-                            disabled={isSubmitting}
-                            type="submit"
-                            className="my-3 py-3 w-full rounded-lg
-                                bg-blue-500 text-blue-200"
-                        >
-                            Login
-                        </button>
-
+                        {loading ? <Loading></Loading> : 
+                            <button 
+                                disabled={isSubmitting}
+                                type="submit"
+                                className="my-3 py-3 w-full rounded-lg
+                                    bg-blue-500 text-blue-200"
+                            >
+                               Login
+                            </button>
+                        }
+                        
                         <hr className="my-1 border-gray-600 w-full"/>
 
                         <button 

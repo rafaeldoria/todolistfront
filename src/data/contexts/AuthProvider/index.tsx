@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
     }
 
     async function authenticate(email: string, password: string) {
+        setLoading(true)
         const response = await LoginRequest(email, password)
         const session = await configSession(response, email)
         if(!session){

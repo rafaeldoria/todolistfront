@@ -11,3 +11,18 @@ export const alert = (
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
     </svg>
 )
+
+export const loadingIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" height="45px">
+        <linearGradient id="a2">
+            <stop offset="0" stop-color="#C7DDFF" stop-opacity="0"></stop>
+            <stop offset="1" stop-color="#C7DDFF"></stop>
+        </linearGradient>
+        <circle fill="none" stroke="url(#a2)" stroke-width="20" stroke-linecap="round" stroke-dasharray="0 22 0 22 0 22 0 22 0 360" cx="100" cy="100" 
+            r="40" transform-origin="center">
+            <animateTransform type="rotate" attributeName="transform" calcMode="discrete" dur="0.8" values="360;324;288;252;216;180;144;108;72;36" 
+                repeatCount="indefinite">
+            </animateTransform>
+        </circle>
+    </svg>
+)
