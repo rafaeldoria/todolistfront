@@ -3,7 +3,7 @@ import Cryptr from 'cryptr';
 import { Api } from "@/Services/api"
 import { User } from "@/model/User";
 
-export async function LoginRequest (email: string, password: string) {
+export async function loginRequest (email: string, password: string) {
     try {
         const urlApi = Api.baseUrl
         const response = await fetch(urlApi + '/login', {
@@ -20,24 +20,29 @@ export async function LoginRequest (email: string, password: string) {
         const result = await response.json()
         return result
     } catch (error) {
-        return null
+        return {'error' : error}
     }
 }
 
-export async function Register (data: User) {
+export async function register (data: User) {
     try {
         const urlApi = Api.baseUrl
-        const response = await fetch(urlApi, {
+        const response = await fetch(urlApi + '/register', {
             method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
-
+                name:data.name,
+                email:data.email,
+                password:data.password
             })
         })
         const result = await response.json()
         return result
     } catch (error) {
-        console.log(error)
-        return null
+        return {'error' : error}
     }
 }
 
@@ -61,6 +66,20 @@ export function managerCookieAuth(value: string, logged: boolean) {
     }else{
         Cookies.remove(cookieAuth)
     }
+}
+
+export function getUserCookie() {
+    const cookieAuth = (process.env.NEXT_COOKIE_LOGIN) ?? 'lca'
+    let user = null
+    let json = Cookies.get(cookieAuth)
+    if(json && json != '' && json != undefined){
+        try {
+            user = JSON.parse(deccryptedString(json))
+        } catch (error) {
+            return null
+        }
+    }
+    return user 
 }
 
 export function enccryptedString(value: string) {

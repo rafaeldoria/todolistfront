@@ -25,5 +25,4 @@ export const ProtectedLayout = ({children}: {children: JSX.Element}) => {
     }else {
         router.push('/auth')
     }
-
 }

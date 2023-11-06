@@ -1,11 +1,11 @@
 import { User } from "@/model/User"
 
 export interface IContext {
+    user?: User
     authenticate: (email: string, password: string) => Promise<void>
+    registerUser: (data: User) => Promise<void>
     logout: () => void
     loading: boolean
-    user?: User
-    // register: (data: User) => Promise<void>
 }
 
 export interface IAuthProvider {

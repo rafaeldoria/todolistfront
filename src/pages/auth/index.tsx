@@ -31,6 +31,7 @@ export default function Index(){
         } catch (e: any) {
             setError(e.message)
             setTimeout(() => setError(''), 6 * 1000)
+            reset()
         }
     }
 
@@ -38,14 +39,14 @@ export default function Index(){
         resolver: zodResolver(userSchema)
     })
 
-    const { handleSubmit, formState: {isSubmitting}} = userForm
+    const { handleSubmit, formState: {isSubmitting}, reset} = userForm
 
     return (
         <main className="h-screen w-screen flex justify-center items-center
                 bg-img-login bg-no-repeat bg-cover"
         >
             <FormProvider {...userForm}>
-                <form 
+                <form
                     onSubmit={handleSubmit(handleSubmitForm)}
                     className="w-full md:w-1/2 lg:w-1/3 bg-[#1F2937] px-10 py-5
                         rounded-lg border border-[#707c91]"
@@ -102,18 +103,7 @@ export default function Index(){
                         
                         <hr className="my-1 border-gray-600 w-full"/>
 
-                        <button 
-                            className="flex justify-center items-center my-3 py-3
-                                w-full bg-rose-800 hover:bg-rose-700
-                                text-white rounded-lg px-1"
-                        >
-                            <span className="mr-2">
-                                {google}
-                            </span>
-                            <span>
-                                Google
-                            </span>
-                        </button>
+                        <Form.ButtonGoogle />
                     </div>
 
                     <div className="flex flex-col items-center justify-center my-3">

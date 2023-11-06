@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { IAuthProvider, IContext } from "./types";
-import { LoginRequest, Register, enccryptedString, getUserLocalStorage, managerCookieAuth, setUserLocalStorage } from "./util";
+import { loginRequest, register, enccryptedString, getUserCookie,  managerCookieAuth } from "./utils";
 import { User } from "@/model/User";
 
 export const AuthContext = createContext<IContext>({} as IContext)
@@ -15,41 +15,63 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
         token:''
     }
 
-    async function configSession(data: any, email: string){
-        if(data.error){
+    async function configSession(response: any, email: string){
+        if(response.error || response.errors){
             setUser(userEmpty)
             managerCookieAuth('',false)
             setLoading(false)
             return false
         }
-        const payload = data != null ? {token: data.token, email: email, name:'rafaeL'} : userEmpty
+        const payload = response.data != null ? 
+        {
+            token: response.data.token, 
+            email: response.data.email, 
+            name: response.data.name
+        } : userEmpty
+
         setUser(payload)
-        managerCookieAuth(enccryptedString(payload.token),true)
+        managerCookieAuth(enccryptedString(JSON.stringify(payload)),true)
         setLoading(false)
         return email
     }
 
-    async function register(data: User){
-        const newUser = await Register(data)
-        setUser(newUser)
+    async function registerUser(data: User){
+        try {
+            setLoading(true)
+            const response = await register(data)
+            const session = await configSession(response, data.email)
+            if(!session){
+                throw new Error('Error to create an user.');
+            }
+        } finally {
+            setLoading(false)
+        } 
     }
 
     async function authenticate(email: string, password: string) {
-        setLoading(true)
-        const response = await LoginRequest(email, password)
-        const session = await configSession(response, email)
-        if(!session){
-            throw new Error('Incorrect username or password');
+        try {
+            setLoading(true)
+            const response = await loginRequest(email, password)
+            const session = await configSession(response, email)
+            if(!session){
+                throw new Error('Incorrect username or password.');
+            }
+        }   finally {
+            setLoading(false)
         }
     }
 
     function logout() {
-        setUser(userEmpty)
-        managerCookieAuth('', false)
+        try {
+            setUser(userEmpty)
+            managerCookieAuth('', false)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
-        const user = getUserLocalStorage()
+        const user = getUserCookie()
         
         if(user) {
             setUser(user)
@@ -60,7 +82,7 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{user, authenticate, logout, loading}}>
+        <AuthContext.Provider value={{user, authenticate, registerUser, logout, loading}}>
             {children}
         </AuthContext.Provider>
     )

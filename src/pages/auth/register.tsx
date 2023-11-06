@@ -1,10 +1,13 @@
-'use client'
+import { Danger } from "@/components/Alerts/Danger";
 import { Form } from "@/components/Form";
-import { google } from "@/components/Icons/index"
+import { alert, google } from "@/components/Icons/index"
+import { Loading } from "@/components/Loading";
 import { useAuth } from "@/data/contexts/AuthProvider/useAuth";
 import { User } from "@/model/User";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import z from "zod";
 
@@ -31,15 +34,24 @@ const userSchema = z
 type userData = z.infer<typeof userSchema>
 
 export default function Register(){
-    // const { register } = useAuth()
+    const { registerUser, loading } = useAuth()
+    const [error, setError] = useState<string>('')
+    const router = useRouter()
+
     const userForm = useForm<userData>({
         resolver: zodResolver(userSchema)
     })
     
-    const { handleSubmit, formState: {isSubmitting}} = userForm
+    const { handleSubmit, formState: {isSubmitting}, reset} = userForm
 
     async function handleSubmitForm(data: User){
-        // await register(data)
+        try {
+            await registerUser(data)
+            router.push('/')
+        } catch (e: any) {
+            setError(e.message)
+            setTimeout(() => setError(''), 6 * 1000)
+        }
     }
 
     return (
@@ -59,6 +71,13 @@ export default function Register(){
                             Create your account
                         </p>
                     </div>
+
+                    {error ? (
+                        <Danger 
+                            icon={alert}
+                            msg={error}
+                        ></Danger>
+                    ) : false}
 
                     <div className="flex flex-col my-4">
                         <Form.Field>
@@ -84,29 +103,20 @@ export default function Register(){
                     </div>
                     
                     <div className="flex flex-col items-center justify-center my-3">
-                        <button 
-                            disabled={isSubmitting}
-                            type="submit"
-                            className="my-3 py-3 w-full rounded-lg
-                                bg-blue-500 text-blue-200"
-                        >
-                            Create an account
-                        </button>
+                        {loading ? <Loading></Loading> : 
+                            <button 
+                                disabled={isSubmitting}
+                                type="submit"
+                                className="my-3 py-3 w-full rounded-lg
+                                    bg-blue-500 text-blue-200"
+                            >
+                               Create an account
+                            </button>
+                        }
 
                         <hr className="my-1 border-gray-600 w-full"/>
 
-                        <button 
-                            className="flex justify-center items-center my-3 py-3
-                                w-full bg-rose-800 hover:bg-rose-700
-                                text-white rounded-lg px-1"
-                        >
-                            <span className="mr-2">
-                                {google}
-                            </span>
-                            <span>
-                                Google
-                            </span>
-                        </button>
+                        <Form.ButtonGoogle />
                     </div>
 
                     <div className="flex flex-col items-center justify-center my-3">
