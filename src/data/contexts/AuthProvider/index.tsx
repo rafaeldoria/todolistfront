@@ -24,9 +24,10 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
         }
         const payload = response.data != null ? 
         {
-            token: response.data.token, 
+            token: response.data.token,
             email: response.data.email, 
-            name: response.data.name
+            name: response.data.name,
+            id: response.data.id
         } : userEmpty
 
         setUser(payload)
