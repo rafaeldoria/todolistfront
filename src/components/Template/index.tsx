@@ -1,6 +1,10 @@
-import { Layout } from './Layout';
 import { Sidebar } from './Sidebar';
+import { Base } from './Base';
+import { Topbar } from './Topbar';
+import { Content } from './Content';
 export const Template = {
-    Layout,
-    Sidebar
+    Base,
+    Sidebar,
+    Topbar,
+    Content,
 }
