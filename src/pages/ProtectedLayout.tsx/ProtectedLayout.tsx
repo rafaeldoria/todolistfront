@@ -9,8 +9,8 @@ export const ProtectedLayout = ({children}: {children: JSX.Element}) => {
     function render(){
         return (
             <>
-            {children}
-        </>
+                {children}
+            </>
         )
     }
 
