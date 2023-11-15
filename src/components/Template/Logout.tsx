@@ -1,7 +1,9 @@
-import { faPlus, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "@/data/contexts/AuthProvider/useAuth";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export function Logout() {
+    const {logout} = useAuth()
     return (
         <ul>
             <li className="hover:bg-gray-800 hover:rounded mb-2
@@ -10,7 +12,8 @@ export function Logout() {
                     flex flex-col justify-center items-center
                     h-16 w-full text-red-400
                     hover:bg-red-400 hover:text-white
-                `}>
+                `}
+                onClick={logout}>
                     <FontAwesomeIcon icon={faRightFromBracket} />
                     <span className={`
                         text-xs font-light mt-1

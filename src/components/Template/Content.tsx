@@ -1,6 +1,6 @@
 import { getTaskLists } from "@/Services/api"
 import { useAuth } from "@/data/contexts/AuthProvider/useAuth"
-import { Key, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export function Content() {
     const { user, logout } = useAuth()

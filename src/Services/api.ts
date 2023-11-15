@@ -1,7 +1,7 @@
 import { User } from "@/model/User";
 
 export const Api = {
-    baseUrl: process.env.NEXT_API_URL,
+    baseUrl: process.env.NEXT_PUBLIC_API_URL
 }
 
 export async function loginRequest (email: string, password: string) {

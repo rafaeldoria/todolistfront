@@ -24,9 +24,6 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
             return false
         }
         const decodeData : any = decodeToken(response.token)
-        console.log(response.data != null)
-        console.log(decodeData !== null)
-        console.log(decodeData.user)
         const payload = decodeData !== null && decodeData.user ? 
         {
             token: response.token,
@@ -34,7 +31,6 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
             name: decodeData.user.name,
             id: decodeData.user.id
         } : userEmpty
-        console.log(payload)
         setUser(payload)
         managerCookieAuth(enccryptedString(JSON.stringify(payload)),true)
         setLoading(false)
