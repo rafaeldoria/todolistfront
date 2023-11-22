@@ -27,16 +27,17 @@ export function managerCookieAuth(value: string, logged: boolean) {
 
 export function getUserCookie() {
     const cookieAuth = (process.env.NEXT_COOKIE_LOGIN) ?? 'lca'
-    let user = null
+    let token = null
     let json = Cookies.get(cookieAuth)
     if(json && json != '' && json != undefined){
         try {
-            user = JSON.parse(deccryptedString(json))
+            token = JSON.parse(deccryptedString(json))
         } catch (error) {
             return null
+            // TODO:: getCookie null pode deslogar?
         }
     }
-    return user 
+    return token 
 }
 
 export function enccryptedString(value: string) {

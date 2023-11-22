@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 
 export const ProtectedLayout = ({children}: {children: JSX.Element}) => {
     const {user, loading} = useAuth()
-    
     const router = useRouter()
 
     function render(){
@@ -18,6 +17,9 @@ export const ProtectedLayout = ({children}: {children: JSX.Element}) => {
         return <div>Loading...</div>
     }
 
+    // TODO:: varias chamadas, entender e corrigir
+    console.log('email pl: ' + user?.email)
+    
     if(!loading && user?.email) {
         return render()
     }else if(loading){

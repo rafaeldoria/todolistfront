@@ -26,15 +26,14 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
         const decodeData : any = decodeToken(response.token)
         const payload = decodeData !== null && decodeData.user ? 
         {
-            token: response.token,
             email: decodeData.user.email, 
             name: decodeData.user.name,
             id: decodeData.user.id
         } : userEmpty
         setUser(payload)
-        managerCookieAuth(enccryptedString(JSON.stringify(payload)),true)
+        managerCookieAuth(enccryptedString(JSON.stringify(response.token)),true)
         setLoading(false)
-        return (payload.email) ?? ''
+        return (payload?.email) ?? ''
     }
 
     async function registerUser(data: User){
@@ -81,14 +80,23 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
     }
 
     useEffect(() => {
-        const user = getUserCookie()
-        
-        if(user) {
-            setUser(user)
+        const token = getUserCookie()
+        // TODO:: Contar requests/passagens por aqui
+        // TODO:: Da pra criar uma função payload?
+        if(token) {
+            const decodeData : any = decodeToken(token)
+            const payload = decodeData !== null && decodeData.user ? 
+            {
+                email: decodeData.user.email, 
+                name: decodeData.user.name,
+                id: decodeData.user.id
+            } : userEmpty
+            setUser(payload)
             setLoading(false)
         }else {
             setLoading(false)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

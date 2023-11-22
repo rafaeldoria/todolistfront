@@ -8,7 +8,7 @@ export default function Page() {
           <Template.Sidebar></Template.Sidebar>
           <div className='flex flex-col h-screen w-screen'>
             <Template.Topbar title="Task Lists"></Template.Topbar>
-            <Template.Content></Template.Content>
+            <Template.Home></Template.Home>
           </div>
       </Template.Base>
     </ProtectedLayout>
