@@ -12,6 +12,26 @@ export default function Page({id, title}:any) {
     const [ tasks, setTasks] = useState<any>()
     const [ loading, setLoading] = useState(true)
 
+    function chageStatus(status: number) {
+        return status ? 0 : 1
+    }
+
+    function handleStatusTask(id: number) {
+        console.log(id)
+        const newTasks = tasks.map((task: any) => {
+            // console.log(i)
+            if(task.id === id){
+                console.log(task)
+                task.status = chageStatus(task.status)
+                return task
+            }else {
+                return task
+            }
+        })
+        setTasks(newTasks)
+        // console.log(tasks)
+    }
+
     useEffect(() => {
         const fetchAllData = async () => {
             try {
@@ -42,7 +62,9 @@ export default function Page({id, title}:any) {
 
             return (
                 <li  key={value.id} className="text-block flex items-center p-5 
-                    text-xl border-b border-gray-400 cursor-pointer">
+                    text-xl border-b border-gray-400 cursor-pointer"
+                    onClick={() => {handleStatusTask(value.id)}}
+                    >
                         <div className={`flex justify-center items-center
                             h-7 w-7 rounded-full cursor-pointer text-white
                             border border-gray-400 ${gradient}`}>
