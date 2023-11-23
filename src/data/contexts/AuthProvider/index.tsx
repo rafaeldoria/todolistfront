@@ -81,8 +81,8 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
 
     useEffect(() => {
         const token = getUserCookie()
-        // TODO:: Contar requests/passagens por aqui
-        // TODO:: Da pra criar uma função payload?
+        // TODO: Contar requests/passagens por aqui
+        // TODO: Da pra criar uma função payload?
         if(token) {
             const decodeData : any = decodeToken(token)
             const payload = decodeData !== null && decodeData.user ? 

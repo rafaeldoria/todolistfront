@@ -14,7 +14,7 @@ export function MenuItem(props: MenuItemProps) {
     const pathname = usePathname()
     const [validPage, setValidPage] = useState<boolean>(true)
 
-    //TODO:: resolver link page state
+    //TODO: resolver link page state
 
     return (
         <li className="hover:bg-gray-800 hover:rounded mb-2

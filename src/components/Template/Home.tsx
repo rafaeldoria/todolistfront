@@ -22,7 +22,7 @@ export function Home(){
                 {props.list}
                 <br /><br /> */}
                 {msg}
-                {/* TODO:: msg apenas primeira vez */}
+                {/* TODO: msg apenas primeira vez */}
             </div>
         </div>
     )

@@ -34,7 +34,7 @@ export function getUserCookie() {
             token = JSON.parse(deccryptedString(json))
         } catch (error) {
             return null
-            // TODO:: getCookie null pode deslogar?
+            // TODO: getCookie null pode deslogar?
         }
     }
     return token 

@@ -3,10 +3,12 @@ import { useAuth } from "@/data/contexts/AuthProvider/useAuth"
 import { useEffect, useState } from "react";
 import { ProtectedLayout } from "../ProtectedLayout.tsx/ProtectedLayout";
 import { Template } from '@/components/Template'
-import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { TaskTemplate } from "@/components/Task";
 
 export default function Page({id, title}:any) {
-    const { user, logout } = useAuth()
+    const { logout } = useAuth()
     const [ tasks, setTasks] = useState<any>()
     const [ loading, setLoading] = useState(true)
 
@@ -31,16 +33,26 @@ export default function Page({id, title}:any) {
 
     function renderTask() {
         return tasks?.map((value:  any ) => {
+            let textStyle = 'text-gray-600'
+            let gradient = ''
+            if(value.status == 1){
+                textStyle = 'line-through text-gray-300' 
+                gradient = 'bg-gradient-to-br from-blue-400 to-purple-500' 
+            }
+
             return (
-                <div key={value.id}>
-                    <h1>-----------</h1>
-                    <ul>
-                        <li className="text-white">{value.title}</li>
-                        <li className="text-white">
-                            {value.status == 1 ? 'Done' : 'To do'}
-                        </li>
-                    </ul>
-                </div>
+                <li  key={value.id} className="text-block flex items-center p-5 
+                    text-xl border-b border-gray-400 cursor-pointer">
+                        <div className={`flex justify-center items-center
+                            h-7 w-7 rounded-full cursor-pointer text-white
+                            border border-gray-400 ${gradient}`}>
+                            {value.status == 1 
+                                ? <FontAwesomeIcon size="sm" icon={faCheck}></FontAwesomeIcon>
+                                : ''
+                            }
+                        </div>
+                        <span className={`font-light ml-5 ${textStyle}`}>{value.title}</span>
+                </li>
             )
         })
     }
@@ -50,27 +62,22 @@ export default function Page({id, title}:any) {
                 <Template.Sidebar></Template.Sidebar>
                 <div className='flex flex-col h-screen w-screen'>
                     <Template.Topbar title="Tasks"></Template.Topbar>
-                    <div className="flex flex-col mb-1 mx-2 p-10 h-full
-                    rounded bg-gray-900
-                    ">
-                        <br />
-                        {user 
-                            ? 'WELCOME ' + user?.name +' - '+ user?.email
-                            : ''
-                        }
-                        <br /><br />
-                        <h2>{title}
-                        </h2>
-                        <br />
-                        ====================================
-                        <br />
-                        {renderTask()}
-                        <br /><br />
-                        <div>
-                            <div>
-                                <h2><Link href={`/`}>Home</Link></h2>
+                    <div className="flex flex-col mb-1 mx-2 p-10 h-full rounded bg-gray-800">
+                        <TaskTemplate.Top title={title} />
+
+                        {/* TODO: criar components para div e li */}
+                        <div className="flex flex-1 justify-center bg-blueGray-600 rounded-b-lg
+                        ">
+                            <div className="flex w-3/5 items-start relative">
+                            <ul className="absolute -top-12 w-full list-none
+                                bg-white shadow-lg rounded-lg">
+                                {renderTask()}
+                            </ul>
                             </div>
                         </div>
+
+                        <Template.HomeLink />
+
                     </div>
                 </div>
             </Template.Base>
