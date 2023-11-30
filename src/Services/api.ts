@@ -1,4 +1,5 @@
 import { enccryptedString, getUserCookie, managerCookieAuth } from "@/data/contexts/AuthProvider/utils";
+import { Task } from "@/model/Task";
 import { User } from "@/model/User";
 
 export const Api = {
@@ -56,7 +57,7 @@ export async function register (data: User) {
 export async function validToken() {
     try {
         const urlApi = Api.baseUrl
-        // TODO:: TOKEN necessidade de validação, e após home separada criar funcion ou colocar na api
+        // TODO: TOKEN necessidade de validação, e após home separada criar funcion ou colocar na api
         const myToken = Api.myToken !== null ? Api.myToken : getUserCookie()
         const response = await fetch(urlApi + '/auth/validtoken', {
             method: 'GET',
@@ -131,6 +132,33 @@ export async function getTasksByList(id: number) {
             },
         });
         return await response.json()
+    } catch (error) {
+        return {'error' : error}
+    }
+}
+
+export async function saveTask(task: Task) {
+    try {
+        const validatedtoken = await validToken()
+        if(validatedtoken.error){
+            throw new Error('Invalid token.');
+        }
+        const urlApi = Api.baseUrl
+        const response = await fetch(urlApi + '/task/' + task.id, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + validatedtoken
+            },
+            body: JSON.stringify({
+                task: task.title,
+                list_id: task.list_id,
+                status: task.status
+            })
+        });
+        const result = await response.json()
+        return result
     } catch (error) {
         return {'error' : error}
     }
