@@ -1,4 +1,4 @@
-import { getTasksByList } from "@/Services/api";
+import { getTasksByList, saveTask } from "@/Services/api";
 import { useAuth } from "@/data/contexts/AuthProvider/useAuth"
 import { useEffect, useState } from "react";
 import { ProtectedLayout } from "../ProtectedLayout.tsx/ProtectedLayout";
@@ -6,30 +6,30 @@ import { Template } from '@/components/Template'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { TaskTemplate } from "@/components/Task";
+import { Task } from "@/model/Task";
 
 export default function Page({id, title}:any) {
     const { logout } = useAuth()
     const [ tasks, setTasks] = useState<any>()
     const [ loading, setLoading] = useState(true)
 
-    function chageStatus(status: number) {
-        return status ? 0 : 1
+    function chageStatus(task: Task) {
+        const newStatus : number = task.status ? 0 : 1
+        task.status = newStatus
+        saveTask(task)
+        return newStatus
     }
 
     function handleStatusTask(id: number) {
-        console.log(id)
-        const newTasks = tasks.map((task: any) => {
-            // console.log(i)
+        const newTasks = tasks.map((task: Task) => {
             if(task.id === id){
-                console.log(task)
-                task.status = chageStatus(task.status)
+                task.status = chageStatus(task)
                 return task
             }else {
                 return task
             }
         })
         setTasks(newTasks)
-        // console.log(tasks)
     }
 
     useEffect(() => {
