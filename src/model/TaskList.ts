@@ -1,5 +1,5 @@
 export interface TaskList {
-    id: number
+    id?: number
     title: string
     status: string
 }

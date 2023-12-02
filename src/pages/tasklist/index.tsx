@@ -2,7 +2,7 @@ import { useAuth } from '@/data/contexts/AuthProvider/useAuth'
 import { ProtectedLayout } from './../ProtectedLayout.tsx/ProtectedLayout'
 import { Template } from '@/components/Template'
 import { useEffect, useState } from 'react'
-import { getTaskLists } from '@/Services/api'
+import { getTaskLists } from '@/services/tasklist'
 import Link from 'next/link'
  
 export default function Page() {

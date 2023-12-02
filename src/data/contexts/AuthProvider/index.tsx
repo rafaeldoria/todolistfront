@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { IAuthProvider, IContext } from "./types";
 import { enccryptedString, getUserCookie,  managerCookieAuth, decodeToken } from "./utils";
 import { User } from "@/model/User";
-import { loginRequest, register } from "@/Services/api";
+import { loginRequest, register } from "@/services/auth";
 
 export const AuthContext = createContext<IContext>({} as IContext)
 

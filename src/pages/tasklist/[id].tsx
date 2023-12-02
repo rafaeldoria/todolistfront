@@ -1,4 +1,4 @@
-import { getTasksByList, saveTask, updateTask } from "@/Services/api";
+import { getTasksByList, saveTask, updateTask } from "@/services/task";
 import { useAuth } from "@/data/contexts/AuthProvider/useAuth"
 import { useEffect, useState } from "react";
 import { ProtectedLayout } from "../ProtectedLayout.tsx/ProtectedLayout";
@@ -14,7 +14,7 @@ import { Form } from "@/components/Form";
 
 const taskSchema = z
     .object({
-        title: z.string().min(5, {message: 'Title is required'})
+        title: z.string().min(5, {message: 'Looks like empty'})
     })
 
 type taskData = z.infer<typeof taskSchema>
@@ -91,28 +91,25 @@ export default function Page({id, title}:any) {
     }
 
     async function handleAddTask(data: any) {
-        const myTasks = tasks.slice(0);
-        const lengthMyTasks = myTasks.length
-
-        
-        const newTask : Task = {
-            id: lengthMyTasks+1,
-            list_id: id,
+        let newTask : Task = {
             title: data.title,
+            list_id: id,
             status: 0
         }
-        // saveTask(newTask)
-        // console.log(newTask)
-        // console.log(myTasks)
-        // myTasks[lengthMyTasks+1] = newTask
+        const response = await saveTask(newTask)
+        newTask.id = response.data.id
+        console.log(newTask)
+        const myTasks = tasks.slice(0);
+        myTasks.push(newTask)
         setTasks(myTasks)
+        reset()
         
     }
 
     const taskForm = useForm<taskData>({
         resolver: zodResolver(taskSchema)
     })
-    const { handleSubmit, formState: {isSubmitting} } = taskForm
+    const { handleSubmit, formState: {isSubmitting}, reset } = taskForm
 
     return (
         <ProtectedLayout>
@@ -125,14 +122,16 @@ export default function Page({id, title}:any) {
                             <form 
                                 onSubmit={handleSubmit(handleAddTask)}
                                 className="flex justify-center mb-1">
-                                    <Form.Input 
-                                        type="text" name="title" placeholder="Type your new task" autoComplete="off"
-                                        extra="w-1/2"
-                                    />
+                                <div className="flex items-center justify-center mb-5 mr-2 ">
+                                    <Form.ErrorMessage field="title"></Form.ErrorMessage>
+                                </div>
+                                <Form.Input 
+                                    type="text" name="title" placeholder="Type your new task" autoComplete="off"
+                                    extra="w-1/2"
+                                />
                                 <button
                                     disabled={isSubmitting}
                                     type="submit"
-                                    // onClick={() => {console.log('clica')}}
                                     className={`
                                         ml-3 px-5 py-4 rounded-lg
                                         focus:outline-none
@@ -142,7 +141,6 @@ export default function Page({id, title}:any) {
                                 </button>
                             </form>
                         </FormProvider>
-
                         <TaskTemplate.Top title={title} />
 
                         {/* TODO: criar components para div e li */}
