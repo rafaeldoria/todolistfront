@@ -25,32 +25,42 @@ export default function Page({id, title}:any) {
     const [ loading, setLoading] = useState(true)
 
     function chageStatus(task: Task) {
-        const newStatus : number = task.status ? 0 : 1
-        task.status = newStatus
-        updateTask(task)
-        return newStatus
+        try {
+            setLoading(true)
+            const newStatus : number = task.status ? 0 : 1
+            task.status = newStatus
+            updateTask(task)
+            return newStatus
+        } finally {
+            setLoading(false)
+        }
     }
 
     function handleStatusTask(id: number) {
-        const newTasks = tasks.map((task: Task) => {
-            if(task.id === id){
-                task.status = chageStatus(task)
-                return task
-            }else {
-                return task
-            }
-        })
-        setTasks(newTasks)
+        try {
+            setLoading(true)
+            const newTasks = tasks.map((task: Task) => {
+                if(task.id === id){
+                    task.status = chageStatus(task)
+                    return task
+                }else {
+                    return task
+                }
+            })
+            setTasks(newTasks)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
         const fetchAllData = async () => {
             try {
+                setLoading(true)
                 if(id){
                     const response = await getTasksByList(id)
                     if(response.data){
                         setTasks(response.data)
-                        setLoading(false)
                     }
                 }
             } catch (error) {
@@ -90,20 +100,28 @@ export default function Page({id, title}:any) {
         })
     }
 
+    function renderLoading(){
+        <Template.LoadingPage />
+    }
+
     async function handleAddTask(data: any) {
-        let newTask : Task = {
-            title: data.title,
-            list_id: id,
-            status: 0
+        try {
+            setLoading(true)
+            let newTask : Task = {
+                title: data.title,
+                list_id: id,
+                status: 0
+            }
+            const response = await saveTask(newTask)
+            newTask.id = response.data.id
+            console.log(newTask)
+            const myTasks = tasks.slice(0);
+            myTasks.push(newTask)
+            setTasks(myTasks)
+            reset()
+        } finally {
+            setLoading(false)
         }
-        const response = await saveTask(newTask)
-        newTask.id = response.data.id
-        console.log(newTask)
-        const myTasks = tasks.slice(0);
-        myTasks.push(newTask)
-        setTasks(myTasks)
-        reset()
-        
     }
 
     const taskForm = useForm<taskData>({
@@ -111,56 +129,64 @@ export default function Page({id, title}:any) {
     })
     const { handleSubmit, formState: {isSubmitting}, reset } = taskForm
 
-    return (
-        <ProtectedLayout>
-            <Template.Base>
-                <Template.Sidebar></Template.Sidebar>
-                <div className='flex flex-col h-screen w-screen'>
-                    <Template.Topbar title="Tasks"></Template.Topbar>
-                    <div className="flex flex-col mb-1 mx-2 p-10 h-full rounded bg-gray-800">
-                        <FormProvider {...taskForm}>
-                            <form 
-                                onSubmit={handleSubmit(handleAddTask)}
-                                className="flex justify-center mb-1">
-                                <div className="flex items-center justify-center mb-5 mr-2 ">
-                                    <Form.ErrorMessage field="title"></Form.ErrorMessage>
+    function render(){
+        return (
+            <ProtectedLayout>
+                <Template.Base>
+                    <Template.Sidebar></Template.Sidebar>
+                    <div className='flex flex-col h-screen w-screen'>
+                        <Template.Topbar title="Tasks"></Template.Topbar>
+                        <div className="flex flex-col mb-1 mx-2 p-10 h-full rounded bg-gray-800">
+                            <FormProvider {...taskForm}>
+                                <form 
+                                    onSubmit={handleSubmit(handleAddTask)}
+                                    className="flex justify-center mb-1">
+                                    <div className="flex items-center justify-center mb-5 mr-2 ">
+                                        <Form.ErrorMessage field="title"></Form.ErrorMessage>
+                                    </div>
+                                    <Form.Input 
+                                        type="text" name="title" placeholder="Type your new task" autoComplete="off"
+                                        extra="w-1/2"
+                                    />
+                                    <button
+                                        disabled={isSubmitting}
+                                        type="submit"
+                                        className={`
+                                            ml-3 px-5 py-4 rounded-lg
+                                            focus:outline-none
+                                            bg-blueGray-600 text-xl
+                                        `}>
+                                        <FontAwesomeIcon size="xs" icon={faPlus}></FontAwesomeIcon>
+                                    </button>
+                                </form>
+                            </FormProvider>
+                            <TaskTemplate.Top title={title} />
+    
+                            {/* TODO: criar components para div e li */}
+                            <div className="flex flex-1 justify-center bg-blueGray-600 rounded-b-lg
+                            ">
+                                <div className="flex w-3/5 items-start relative">
+                                <ul className="absolute -top-12 w-full list-none
+                                    bg-white shadow-lg rounded-lg">
+                                    {renderTask()}
+                                </ul>
                                 </div>
-                                <Form.Input 
-                                    type="text" name="title" placeholder="Type your new task" autoComplete="off"
-                                    extra="w-1/2"
-                                />
-                                <button
-                                    disabled={isSubmitting}
-                                    type="submit"
-                                    className={`
-                                        ml-3 px-5 py-4 rounded-lg
-                                        focus:outline-none
-                                        bg-blueGray-600 text-xl
-                                    `}>
-                                    <FontAwesomeIcon size="xs" icon={faPlus}></FontAwesomeIcon>
-                                </button>
-                            </form>
-                        </FormProvider>
-                        <TaskTemplate.Top title={title} />
-
-                        {/* TODO: criar components para div e li */}
-                        <div className="flex flex-1 justify-center bg-blueGray-600 rounded-b-lg
-                        ">
-                            <div className="flex w-3/5 items-start relative">
-                            <ul className="absolute -top-12 w-full list-none
-                                bg-white shadow-lg rounded-lg">
-                                {renderTask()}
-                            </ul>
                             </div>
+    
+                            <Template.HomeLink />
+    
                         </div>
-
-                        <Template.HomeLink />
-
                     </div>
-                </div>
-            </Template.Base>
-        </ProtectedLayout>
-    )
+                </Template.Base>
+            </ProtectedLayout>
+        )
+    }
+
+    if(!loading) {
+        return render()
+    }else if(loading){
+        return renderLoading()
+    }
 };
 
 Page.getInitialProps = ({ query } : any) => {
